@@ -1,26 +1,28 @@
 const cron = require('node-cron');
 const Assignment = require('../models/Assignment');
 const mongoose = require('mongoose');
+const sendReminderEmail = require('../utils/mailer');
 
 // Function runs every 30 minutes
 cron.schedule('*/30 * * * *', async () => {
     console.log('🔁 Running assignment reminder check...');
 
     const now = new Date();
-    const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
 
-    try {
-        // Find assignments due in the next hour
-        const assignments = await Assignment.find({
-            dueDate: { $gte: now, $lte: nextHour }
-        });
+   try {
+    const assignments = await Assignment.find();
+    for (let assignment of assignments) {
+      const timeLeft = (assignment.dueDate - now) / (1000 * 60 * 60); // in hours
+      const shouldNotify = timeLeft <= (assignment.reminderOffset || 1) && timeLeft > 0;
 
-        for (let assignment of assignments) {
-            const timeLeft = (assignment.dueDate - now) / (1000 * 60); // in minutes
-            console.log(`⏰ Reminder: "${assignment.title}" is due in ${Math.round(timeLeft)} mins for user ${assignment.userId}`);
-                  // 🔜 Replace this with real email/push notification later
+      if (shouldNotify) {
+        const user = await User.findById(assignment.userId);
+        if (user) {
+          await sendReminderEmail(user.email, assignment);
         }
-    } catch (err) {
-        console.error('❌ Error checking deadlines:', err);
+      }
     }
+  } catch (err) {
+    console.error('❌ Error checking assignments:', err);
+  }
 });
