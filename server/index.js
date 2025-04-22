@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const assignmentRoutes = require('./routes/assignments');
 
+require('./jobs/reminderCheck');
 require('dotenv').config();
 
 const app = express();
