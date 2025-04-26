@@ -14,9 +14,9 @@ app.use(express.json());
 app.use('/api/assignments', assignmentRoutes);
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error(err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(err));
 
 app.get('/', (req, res) => {
     res.send('Server is running!');

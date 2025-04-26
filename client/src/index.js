@@ -1,29 +1,11 @@
-import React, { useState } from 'react';
-import RegisterPage from './pages/RegisterPage';
-import LoginPage from './pages/LoginPage';
-import Dashboard from './pages/Dashboard';
-import App from './App.jsx'; 
-import API from './api';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App'; // ✅ Import App
+import './index.css';     // ✅ Tailwind if you have it
 
-function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-
-  if (token) {
-    API.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }
-
-  return (
-    <div>
-      {!token ? (
-        <>
-          <RegisterPage />
-          <LoginPage setToken={setToken} />
-        </>
-      ) : (
-        <Dashboard />
-      )}
-    </div>
-  );
-}
-
-export default App;
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
